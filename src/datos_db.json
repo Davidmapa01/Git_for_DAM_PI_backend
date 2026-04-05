@@ -1,0 +1,269 @@
+{
+  "usuarios": [
+    {
+      "email": "david@gmail.com",
+      "contrasena": "1",
+      "nombre": "david",
+      "poblacion": "valencia",
+      "descripcion": "usuario normal, busca cuidadores para su mascota.",
+      "rutaFotoPerfil": "",
+      "esCuidador": false,
+      "tipoMascotaQueCuida": "",
+      "mascotas": [
+        {
+          "nombre": "rocky",
+          "tipo": "perro",
+          "descripcion": "",
+          "valoraciones": []
+        }
+      ],
+      "valoraciones": []
+    },
+    {
+      "email": "noelia@gmail.com",
+      "contrasena": "1234",
+      "nombre": "noelia",
+      "poblacion": "valencia",
+      "descripcion": "amante de los animales con 5 años de experiencia.",
+      "rutaFotoPerfil": "",
+      "esCuidador": true,
+      "tipoMascotaQueCuida": "todos",
+      "mascotas": [
+        {
+          "nombre": "luna",
+          "tipo": "perro",
+          "descripcion": "",
+          "valoraciones": []
+        }
+      ],
+      "valoraciones": [
+        {
+          "emailValorador": "david@gmail.com",
+          "puntuacion": 5,
+          "descripcion": "excelente cuidadora.",
+          "fecha": "01/04/2026"
+        },
+        {
+          "emailValorador": "pablo@gmail.com",
+          "puntuacion": 5,
+          "descripcion": "mi perro la adora.",
+          "fecha": "02/04/2026"
+        },
+        {
+          "emailValorador": "cintia@gmail.com",
+          "puntuacion": 4,
+          "descripcion": "muy buena experiencia.",
+          "fecha": "03/04/2026"
+        }
+      ]
+    },
+    {
+      "email": "pablo@gmail.com",
+      "contrasena": "1234",
+      "nombre": "pablo",
+      "poblacion": "valencia",
+      "descripcion": "cuido perros con mucho cariño.",
+      "rutaFotoPerfil": "",
+      "esCuidador": true,
+      "tipoMascotaQueCuida": "perro",
+      "mascotas": [
+        {
+          "nombre": "max",
+          "tipo": "perro",
+          "descripcion": "",
+          "valoraciones": []
+        }
+      ],
+      "valoraciones": [
+        {
+          "emailValorador": "david@gmail.com",
+          "puntuacion": 4,
+          "descripcion": "muy responsable.",
+          "fecha": "01/04/2026"
+        },
+        {
+          "emailValorador": "noelia@gmail.com",
+          "puntuacion": 4,
+          "descripcion": "recomendable.",
+          "fecha": "02/04/2026"
+        }
+      ]
+    },
+    {
+      "email": "isabel@gmail.com",
+      "contrasena": "1234",
+      "nombre": "isabel",
+      "poblacion": "madrid",
+      "descripcion": "especialista en gatos y animales exóticos.",
+      "rutaFotoPerfil": "",
+      "esCuidador": true,
+      "tipoMascotaQueCuida": "gato",
+      "mascotas": [
+        {
+          "nombre": "misi",
+          "tipo": "gato",
+          "descripcion": "",
+          "valoraciones": []
+        }
+      ],
+      "valoraciones": [
+        {
+          "emailValorador": "david@gmail.com",
+          "puntuacion": 5,
+          "descripcion": "increíble con los gatos.",
+          "fecha": "01/04/2026"
+        },
+        {
+          "emailValorador": "pablo@gmail.com",
+          "puntuacion": 5,
+          "descripcion": "100% recomendable.",
+          "fecha": "02/04/2026"
+        },
+        {
+          "emailValorador": "noelia@gmail.com",
+          "puntuacion": 5,
+          "descripcion": "la mejor cuidadora.",
+          "fecha": "03/04/2026"
+        }
+      ]
+    },
+    {
+      "email": "andres@gmail.com",
+      "contrasena": "1234",
+      "nombre": "andres",
+      "poblacion": "barcelona",
+      "descripcion": "cuidador experimentado en barcelona.",
+      "rutaFotoPerfil": "",
+      "esCuidador": true,
+      "tipoMascotaQueCuida": "todos",
+      "mascotas": [],
+      "valoraciones": [
+        {
+          "emailValorador": "david@gmail.com",
+          "puntuacion": 3,
+          "descripcion": "correcto.",
+          "fecha": "01/04/2026"
+        },
+        {
+          "emailValorador": "pablo@gmail.com",
+          "puntuacion": 4,
+          "descripcion": "buena experiencia.",
+          "fecha": "02/04/2026"
+        }
+      ]
+    },
+    {
+      "email": "cintia@gmail.com",
+      "contrasena": "1234",
+      "nombre": "cintia",
+      "poblacion": "valencia",
+      "descripcion": "nueva cuidadora con mucha ilusión.",
+      "rutaFotoPerfil": "",
+      "esCuidador": true,
+      "tipoMascotaQueCuida": "perro",
+      "mascotas": [
+        {
+          "nombre": "toby",
+          "tipo": "perro",
+          "descripcion": "",
+          "valoraciones": []
+        }
+      ],
+      "valoraciones": [
+        {
+          "emailValorador": "david@gmail.com",
+          "puntuacion": 3,
+          "descripcion": "buena chica.",
+          "fecha": "01/04/2026"
+        }
+      ]
+    }
+  ],
+  "anuncios": [
+    {
+      "id": "anuncio-001",
+      "emailCuidador": "noelia@gmail.com",
+      "nombreCuidador": "noelia",
+      "poblacion": "valencia",
+      "tiposMascota": [
+        "perro",
+        "gato",
+        "pajaro",
+        "rohedor",
+        "exotico",
+        "otro"
+      ],
+      "precioPorDia": 25,
+      "descripcion": "tengo jardín amplio, acepto todo tipo de mascotas.",
+      "fechaInicio": "01/06/2026",
+      "fechaFin": "30/06/2026",
+      "fechaPublicacion": "01/04/2026",
+      "activo": true
+    },
+    {
+      "id": "anuncio-002",
+      "emailCuidador": "pablo@gmail.com",
+      "nombreCuidador": "pablo",
+      "poblacion": "valencia",
+      "tiposMascota": [
+        "perro"
+      ],
+      "precioPorDia": 15,
+      "descripcion": "cuido perros en mi piso, salidas dos veces al día.",
+      "fechaInicio": "01/06/2026",
+      "fechaFin": "15/06/2026",
+      "fechaPublicacion": "01/04/2026",
+      "activo": true
+    },
+    {
+      "id": "anuncio-003",
+      "emailCuidador": "isabel@gmail.com",
+      "nombreCuidador": "isabel",
+      "poblacion": "madrid",
+      "tiposMascota": [
+        "gato"
+      ],
+      "precioPorDia": 20,
+      "descripcion": "especialista en gatos, ambiente tranquilo en casa.",
+      "fechaInicio": "01/06/2026",
+      "fechaFin": "30/06/2026",
+      "fechaPublicacion": "01/04/2026",
+      "activo": true
+    },
+    {
+      "id": "anuncio-004",
+      "emailCuidador": "andres@gmail.com",
+      "nombreCuidador": "andres",
+      "poblacion": "barcelona",
+      "tiposMascota": [
+        "perro",
+        "gato",
+        "pajaro",
+        "rohedor",
+        "exotico",
+        "otro"
+      ],
+      "precioPorDia": 20,
+      "descripcion": "cuidador con experiencia en barcelona centro.",
+      "fechaInicio": "01/06/2026",
+      "fechaFin": "30/06/2026",
+      "fechaPublicacion": "01/04/2026",
+      "activo": true
+    },
+    {
+      "id": "anuncio-005",
+      "emailCuidador": "cintia@gmail.com",
+      "nombreCuidador": "cintia",
+      "poblacion": "valencia",
+      "tiposMascota": [
+        "perro"
+      ],
+      "precioPorDia": 10,
+      "descripcion": "primera experiencia, mucha ilusión y cariño.",
+      "fechaInicio": "10/06/2026",
+      "fechaFin": "20/06/2026",
+      "fechaPublicacion": "01/04/2026",
+      "activo": true
+    }
+  ]
+}
