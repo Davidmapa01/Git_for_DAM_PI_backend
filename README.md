@@ -6,8 +6,13 @@ API REST desarrollada con Node.js y Express para la aplicación APPASEO, una pla
 
 - **Node.js** — entorno de ejecución
 - **Express** — framework web
+- **MySQL** — base de datos relacional alojada en FreeSQLdatabase
 - **UUID** — generación de identificadores únicos
-- **Persistencia en disco** — los datos se guardan en `datos_db.json`
+
+## Requisitos
+
+- Node.js instalado
+- Conexión a internet (la base de datos está alojada en FreeSQLdatabase)
 
 ## Instalación
 
@@ -21,9 +26,11 @@ npm install
 node src/index.js
 ```
 
-El servidor arranca en el puerto **3000**. Verifica que funciona accediendo a:
+El servidor arranca en el puerto **3000**. En la consola deben aparecer los mensajes:
+
 ```
-http://localhost:3000/holaGET
+[MySQL] Conexión establecida correctamente.
+Servidor APPASEO corriendo en puerto 3000
 ```
 
 ## Estructura del proyecto
@@ -32,64 +39,77 @@ http://localhost:3000/holaGET
 AppaseoBackend/
     src/
         index.js              # Configuración del servidor Express
-        db.js                 # Lógica de persistencia en disco
-        datos_db.json         # Base de datos en disco (se genera automáticamente)
+        db.js                 # Compatibilidad (migrado a MySQL)
+        mysql.js              # Rutas de demostración MySQL (/api/mysql/)
         routes/
-            usuarios.js       # Rutas de gestión de usuarios
-            anuncios.js       # Rutas de gestión de anuncios
-            valoraciones.js   # Rutas de gestión de valoraciones
+            usuarios.js       # Rutas de gestión de usuarios (MySQL)
+            anuncios.js       # Rutas de gestión de anuncios (MySQL)
+            valoraciones.js   # Rutas de gestión de valoraciones (MySQL)
 ```
 
 ## Rutas disponibles
 
 ### Usuarios
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| POST | `/login` | Valida credenciales y devuelve el usuario |
-| POST | `/registro` | Registra un nuevo usuario |
-| POST | `/recuperarContrasena` | Actualiza la contraseña de un usuario |
-| POST | `/actualizarUsuario` | Actualiza campos del perfil de un usuario |
-| GET | `/listarUsuarios` | Devuelve todos los usuarios registrados |
-| GET | `/usuarioPorEmail/:email` | Devuelve un usuario por su email |
+| Método | Ruta | Descripción | Códigos |
+|--------|------|-------------|---------|
+| POST | `/login` | Valida credenciales y devuelve el usuario | 200, 400, 401, 404, 500 |
+| POST | `/registro` | Registra un nuevo usuario | 200, 400, 409, 500 |
+| POST | `/recuperarContrasena` | Actualiza la contraseña de un usuario | 200, 400, 404, 500 |
+| POST | `/actualizarUsuario` | Actualiza campos del perfil de un usuario | 200, 400, 500 |
+| GET | `/listarUsuarios` | Devuelve todos los usuarios con sus valoraciones | 200, 500 |
+| GET | `/usuarioPorEmail/:email` | Devuelve un usuario por su email | 200, 404, 500 |
 
 ### Anuncios
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| POST | `/publicarAnuncio` | Publica un nuevo anuncio de cuidador |
-| GET | `/listarAnuncios` | Devuelve todos los anuncios activos |
-| DELETE | `/eliminarAnuncio/:id` | Desactiva un anuncio por su id |
+| Método | Ruta | Descripción | Códigos |
+|--------|------|-------------|---------|
+| POST | `/publicarAnuncio` | Publica una nueva petición de acogida | 200, 400, 500 |
+| GET | `/listarAnuncios` | Devuelve todas las peticiones activas | 200, 500 |
+| DELETE | `/eliminarAnuncio/:id` | Desactiva una petición por su id | 200, 500 |
 
 ### Valoraciones
 
+| Método | Ruta | Descripción | Códigos |
+|--------|------|-------------|---------|
+| POST | `/addValoracion` | Añade una valoración a un cuidador | 200, 400, 500 |
+
+### Rutas MySQL (demostración)
+
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| POST | `/addValoracion` | Añade una valoración a un cuidador |
+| GET | `/api/mysql/usuarios` | Lista todos los usuarios |
+| GET | `/api/mysql/usuarioPorEmail/:email` | Devuelve un usuario por email |
+| POST | `/api/mysql/login` | Login via MySQL |
+| POST | `/api/mysql/registro` | Registro via MySQL |
 
-### Prueba de conexión
+## Base de datos
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/holaGET` | Verifica que el servidor está funcionando |
+La base de datos está alojada en **FreeSQLdatabase** y tiene 3 tablas:
 
-## Persistencia de datos
-
-Los datos se guardan automáticamente en `src/datos_db.json` tras cada operación de escritura. Al arrancar el servidor, si el archivo existe se carga desde disco; si no existe, se inicializa con los datos de prueba definidos en `db.js`.
+| Tabla | Descripción |
+|-------|-------------|
+| `usuarios` | Datos personales, credenciales y configuración de cuidador |
+| `anuncios` | Peticiones de acogida publicadas por cuidadores |
+| `valoraciones` | Opiniones de usuarios sobre cuidadores |
 
 ## Usuarios de prueba
 
 | Email | Contraseña | Población | Cuidador |
 |-------|------------|-----------|----------|
-| david@gmail.com | 1234 | valencia | No |
-| noelia@gmail.com | 1234 | valencia | Sí |
-| pablo@gmail.com | 1234 | valencia | Sí |
-| isabel@gmail.com | 1234 | madrid | Sí |
-| andres@gmail.com | 1234 | barcelona | Sí |
-| cintia@gmail.com | 1234 | valencia | Sí |
+| david@gmail.com | 1234 | Valencia | No |
+| noelia@gmail.com | 1234 | Valencia | Sí |
+| pablo@gmail.com | 1234 | Valencia | Sí |
+| isabel@gmail.com | 1234 | Madrid | Sí |
+| andres@gmail.com | 1234 | Barcelona | Sí |
+| cintia@gmail.com | 1234 | Valencia | Sí |
+| carlos@gmail.com | 1234 | Valencia | Sí |
+| lucia@gmail.com | 1234 | Sevilla | No |
+| marta@gmail.com | 1234 | Barcelona | Sí |
 
 ## Notas
 
-- Todos los campos de texto se almacenan en minúsculas para evitar conflictos de comparación.
-- El campo `esCuidador` se convierte correctamente de string a booleano al recibirse desde Unity.
-- La base de datos en memoria está preparada para ser migrada a MySQL en futuras versiones.
+- El email se almacena en minúsculas. La contraseña se almacena tal como la introduce el usuario.
+- El campo `esCuidador` se convierte de string a entero (0/1) al guardarse en MySQL.
+- Los tipos de mascota se almacenan como CSV en MySQL y se convierten a array al devolverse a Unity.
+- Las valoraciones están en tabla separada. Cada petición de usuario completo requiere dos consultas SQL.

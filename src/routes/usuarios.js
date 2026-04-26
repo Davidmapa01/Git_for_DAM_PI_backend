@@ -1,120 +1,141 @@
-const { Router }           = require("express");
-const router               = Router();
-const { db, guardarEnDisco } = require("../db");
+const { Router } = require("express");
+const router      = Router();
+const mysql       = require("mysql");
 
-// ════════════════════════════════════════════════════════════════════════════
-//  POST /login
-// ════════════════════════════════════════════════════════════════════════════
+const db = mysql.createConnection({
+    host:     "sql7.freesqldatabase.com",
+    user:     "sql7824067",
+    password: "dgDRtLqi5r",
+    database: "sql7824067",
+    port:     3306
+});
+
+db.connect((error) => {
+    if (error) console.error("[MySQL] Error en usuarios.js:", error.message);
+});
+
+function obtenerUsuarioCompleto(email, callback) {
+    db.query("SELECT * FROM usuarios WHERE email = ?", [email], (err, rows) => {
+        if (err || !rows.length) return callback(err, null);
+        const usuario = rows[0];
+        usuario.esCuidador = usuario.esCuidador === 1;
+        db.query("SELECT * FROM valoraciones WHERE emailCuidador = ?", [email], (err, vals) => {
+            if (err) return callback(err, null);
+            usuario.valoraciones = vals || [];
+            usuario.mascotas     = [];
+            callback(null, usuario);
+        });
+    });
+}
+
 router.post("/login", (req, res) => {
     const { email, contrasena } = req.body;
-
     if (!email || !contrasena)
         return res.status(400).json({ exito: false, mensaje: "Faltan campos obligatorios." });
 
-    const usuario = db.usuarios.find(u => u.email === email.toLowerCase());
+    db.query("SELECT * FROM usuarios WHERE email = ?", [email.toLowerCase()], (err, rows) => {
+        if (err)          return res.status(500).json({ exito: false, mensaje: err.message });
+        if (!rows.length) return res.status(404).json({ exito: false, mensaje: "El email introducido no está registrado." });
 
-    if (!usuario)
-        return res.status(404).json({ exito: false, mensaje: "El email introducido no está registrado." });
+        const usuario = rows[0];
+        if (usuario.contrasena !== contrasena)
+            return res.status(401).json({ exito: false, mensaje: "La contraseña es incorrecta." });
 
-    if (usuario.contrasena !== contrasena.toLowerCase())
-        return res.status(401).json({ exito: false, mensaje: "La contraseña es incorrecta." });
-
-    res.json({ exito: true, mensaje: "Login correcto.", usuario });
+        obtenerUsuarioCompleto(email.toLowerCase(), (err, usuarioCompleto) => {
+            if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+            res.json({ exito: true, mensaje: "Login correcto.", usuario: usuarioCompleto });
+        });
+    });
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-//  POST /registro
-// ════════════════════════════════════════════════════════════════════════════
 router.post("/registro", (req, res) => {
     const { email, contrasena, nombre, poblacion } = req.body;
-
     if (!email || !contrasena || !nombre || !poblacion)
         return res.status(400).json({ exito: false, mensaje: "Faltan campos obligatorios." });
 
-    const existe = db.usuarios.find(u => u.email === email.toLowerCase());
+    db.query("SELECT id FROM usuarios WHERE email = ?", [email.toLowerCase()], (err, rows) => {
+        if (err)         return res.status(500).json({ exito: false, mensaje: err.message });
+        if (rows.length) return res.status(409).json({ exito: false, mensaje: "El email introducido ya se encuentra registrado." });
 
-    if (existe)
-        return res.status(409).json({ exito: false, mensaje: "El email introducido ya se encuentra registrado." });
+        const nuevoUsuario = {
+            email:                  email.toLowerCase(),
+            contrasena:             contrasena,
+            nombre:                 nombre.toLowerCase(),
+            poblacion:              poblacion.toLowerCase(),
+            descripcion:            "",
+            rutaFotoPerfil:         "",
+            esCuidador:             0,
+            telefono:               "",
+            fechaRegistro:          new Date().toLocaleDateString("es-ES"),
+            puedeEnviarFotos:       "",
+            admiteAnimalesCuidados: "",
+            esFumador:              ""
+        };
 
-    const nuevoUsuario = {
-        email:               email.toLowerCase(),
-        contrasena:          contrasena.toLowerCase(),
-        nombre:              nombre.toLowerCase(),
-        poblacion:           poblacion.toLowerCase(),
-        descripcion:         "",
-        rutaFotoPerfil:      "",
-        esCuidador:          false,
-        tipoMascotaQueCuida: "",
-        mascotas:            [],
-        valoraciones:        []
-    };
-
-    db.usuarios.push(nuevoUsuario);
-    guardarEnDisco();
-    res.json({ exito: true, mensaje: "Usuario registrado correctamente.", usuario: nuevoUsuario });
+        db.query("INSERT INTO usuarios SET ?", nuevoUsuario, (err) => {
+            if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+            nuevoUsuario.esCuidador   = false;
+            nuevoUsuario.valoraciones = [];
+            nuevoUsuario.mascotas     = [];
+            res.json({ exito: true, mensaje: "Usuario registrado correctamente.", usuario: nuevoUsuario });
+        });
+    });
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-//  POST /recuperarContrasena
-// ════════════════════════════════════════════════════════════════════════════
 router.post("/recuperarContrasena", (req, res) => {
     const { email, nuevaContrasena } = req.body;
-
     if (!email || !nuevaContrasena)
         return res.status(400).json({ exito: false, mensaje: "Faltan campos obligatorios." });
 
-    const usuario = db.usuarios.find(u => u.email === email.toLowerCase());
-
-    if (!usuario)
-        return res.status(404).json({ exito: false, mensaje: "El email introducido no está registrado." });
-
-    usuario.contrasena = nuevaContrasena.toLowerCase();
-    guardarEnDisco();
-    res.json({ exito: true, mensaje: "Contraseña actualizada correctamente." });
+    db.query("UPDATE usuarios SET contrasena = ? WHERE email = ?",
+        [nuevaContrasena, email.toLowerCase()], (err) => {
+        if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+        res.json({ exito: true, mensaje: "Contraseña actualizada correctamente." });
+    });
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-//  GET /listarUsuarios
-// ════════════════════════════════════════════════════════════════════════════
 router.get("/listarUsuarios", (req, res) => {
-    res.json({ exito: true, usuarios: db.usuarios });
+    db.query("SELECT * FROM usuarios", (err, rows) => {
+        if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+
+        db.query("SELECT * FROM valoraciones", (err, vals) => {
+            if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+
+            const usuarios = rows.map(u => ({
+                ...u,
+                esCuidador:   u.esCuidador === 1,
+                mascotas:     [],
+                valoraciones: vals.filter(v => v.emailCuidador === u.email)
+            }));
+
+            res.json({ exito: true, usuarios });
+        });
+    });
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-//  GET /usuarioPorEmail/:email
-// ════════════════════════════════════════════════════════════════════════════
 router.get("/usuarioPorEmail/:email", (req, res) => {
-    const usuario = db.usuarios.find(u => u.email === req.params.email.toLowerCase());
-
-    if (!usuario)
-        return res.status(404).json({ exito: false, mensaje: "Usuario no encontrado." });
-
-    res.json({ exito: true, usuario });
+    obtenerUsuarioCompleto(req.params.email.toLowerCase(), (err, usuario) => {
+        if (err)      return res.status(500).json({ exito: false, mensaje: err.message });
+        if (!usuario) return res.status(404).json({ exito: false, mensaje: "Usuario no encontrado." });
+        res.json({ exito: true, usuario });
+    });
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-//  POST /actualizarUsuario
-// ════════════════════════════════════════════════════════════════════════════
 router.post("/actualizarUsuario", (req, res) => {
     const { email, ...campos } = req.body;
-
-    if (!email)
-        return res.status(400).json({ exito: false, mensaje: "Falta el email." });
-
-    const usuario = db.usuarios.find(u => u.email === email.toLowerCase());
-
-    if (!usuario)
-        return res.status(404).json({ exito: false, mensaje: "Usuario no encontrado." });
+    if (!email) return res.status(400).json({ exito: false, mensaje: "Falta el email." });
 
     if (campos.esCuidador !== undefined)
-        campos.esCuidador = campos.esCuidador === "true" || campos.esCuidador === true;
+        campos.esCuidador = campos.esCuidador === "true" || campos.esCuidador === true ? 1 : 0;
 
-    if (campos.tipoMascotaQueCuida !== undefined)
-        campos.tipoMascotaQueCuida = campos.tipoMascotaQueCuida.toLowerCase();
+    db.query("UPDATE usuarios SET ? WHERE email = ?", [campos, email.toLowerCase()], (err) => {
+        if (err) return res.status(500).json({ exito: false, mensaje: err.message });
 
-    Object.assign(usuario, campos);
-    guardarEnDisco();
-    res.json({ exito: true, mensaje: "Usuario actualizado correctamente.", usuario });
+        obtenerUsuarioCompleto(email.toLowerCase(), (err, usuario) => {
+            if (err) return res.status(500).json({ exito: false, mensaje: err.message });
+            res.json({ exito: true, mensaje: "Usuario actualizado correctamente.", usuario });
+        });
+    });
 });
 
 module.exports = router;

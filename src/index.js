@@ -22,6 +22,8 @@ app.get("/holaGET", (req, res) => {
 app.use("/", require("./routes/usuarios"));
 app.use("/", require("./routes/anuncios"));
 app.use("/", require("./routes/valoraciones"));
+// Añadida mySQL
+app.use("/api/mysql", require("./mysql"));
 
 // ── Arrancar servidor ─────────────────────────────────────────────────────────
 app.listen(app.get("port"), () => {
